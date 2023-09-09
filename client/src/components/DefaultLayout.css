@@ -17,6 +17,7 @@
   box-shadow: 0 0 3px #ddd;
   border-radius: 7px;
   margin: 10px;
+  overflow: auto;
 }
 .ant-layout-header{
   margin: 10px;
@@ -24,5 +25,18 @@
   margin-top: 18px;
   margin-left: 16px;
   margin-right: 16px;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
+.cart-item {
+  padding-left: 20px;
+  padding-right: 30px;
+  cursor: pointer;
+}
+.cart-item p {
+  margin-top: 10px;
+  font-weight: bold;
+}

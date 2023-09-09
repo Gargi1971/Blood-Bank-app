@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
+import {useSelector} from 'react-redux';
 import {Link} from 'react-router-dom';
 import "./DefaultLayout.css";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
   UserOutlined,
-  VideoCameraOutlined,
+  LogoutOutlined,
+  HomeOutlined,
+  CopyOutlined,
+  UnorderedListOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme } from 'antd';
 const { Header, Sider, Content } = Layout;
-const DefaultLayout = () => {
+
+
+const DefaultLayout = ({children}) => {
+  const {cartItems} = useSelector(state => state.rootReducer)
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
@@ -21,35 +28,28 @@ const DefaultLayout = () => {
         <div className="demo-logo-vertical" >
             <h1 className='text-center text-light font-wight-bold mt-2'>CashAide</h1>
         </div>
-        <Menu>
+        <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
-          items={[
-            {
-              key: '1',
-              icon: <UserOutlined />,
-              label: 'nav 1',
-            },
-            {
-              key: '2',
-              icon: <VideoCameraOutlined />,
-              label: 'nav 2',
-            },
-            {
-              key: '3',
-              icon: <UploadOutlined />,
-              label: 'nav 3',
-            },
-            {
-                key: '4',
-                icon: <UploadOutlined />,
-                label: 'nav 3',
-            },
-          ]}
-          <Menu.Item key={1} icon={<UserOutlined />}>
-            <Link to='/'>Home</Link>
-          </Menu.Item>
+          defaultSelectedKeys={window.location.pathname}
+
+        >
+            <Menu.Item key={1} icon={<HomeOutlined/>}>
+                <Link to = '/'>Home</Link>
+            </Menu.Item>
+            <Menu.Item key='/bills' icon={<CopyOutlined/>}>
+                <Link to = '/bills'>Bills</Link>
+            </Menu.Item>
+            <Menu.Item key='/items' icon={<UnorderedListOutlined/>}>
+                <Link to = '/items'>Items</Link>
+            </Menu.Item>
+            <Menu.Item key='/customers' icon={<UserOutlined/>}>
+                <Link to = '/customers'>Customers</Link>
+            </Menu.Item>
+            <Menu.Item key='/logout' icon={<LogoutOutlined/>}>
+                <Link to = '/logout'>Logout</Link>
+            </Menu.Item>
+
         </Menu>
 
       </Sider>
@@ -70,6 +70,11 @@ const DefaultLayout = () => {
               height: 64,
             }}
           />
+           <div className="cart-item d-flex jusitfy-content-space-between flex-row">
+            <p>{cartItems.length}</p>
+            <ShoppingCartOutlined />
+          </div>
+  
         </Header>
         <Content
           style={{
@@ -79,7 +84,7 @@ const DefaultLayout = () => {
             background: colorBgContainer,
           }}
         >
-          Content
+          {children}
         </Content>
       </Layout>
     </Layout>
