@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {useSelector} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import "./DefaultLayout.css";
+import Spinner from "./spinner";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -17,13 +18,21 @@ const { Header, Sider, Content } = Layout;
 
 
 const DefaultLayout = ({children}) => {
-  const {cartItems} = useSelector(state => state.rootReducer)
+  const navigate = useNavigate();
+  const {cartItems, loading} = useSelector(state => state.rootReducer)
   const [collapsed, setCollapsed] = useState(false);
+
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+  //to get local storage data
+  useEffect(() =>{
+    localStorage.getItem('cartItems', JSON.stringify(cartItems))
+  }, [cartItems])
+
   return (
     <Layout>
+      {loading && <Spinner/>}
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="demo-logo-vertical" >
             <h1 className='text-center text-light font-wight-bold mt-2'>CashAide</h1>
@@ -70,7 +79,9 @@ const DefaultLayout = ({children}) => {
               height: 64,
             }}
           />
-           <div className="cart-item d-flex jusitfy-content-space-between flex-row">
+           <div className="cart-item d-flex jusitfy-content-space-between flex-row"
+           onClick={() => navigate("/cart")}
+           >
             <p>{cartItems.length}</p>
             <ShoppingCartOutlined />
           </div>
