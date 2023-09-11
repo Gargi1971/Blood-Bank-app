@@ -13,6 +13,7 @@ const ItemPage = () => {
     const [itemsData, setItemsData] = useState([]);
     const dispatch = useDispatch();
     const [popupModal, setPopupModal] = useState(false);
+    const [editItem, setEditItem] = useState(null);
 
     const getAllItems = async () => {
         try {
@@ -34,6 +35,26 @@ const ItemPage = () => {
         getAllItems();
       }, []);
 
+      //handle delete
+      const handleDelete = async (record) => {
+        try {
+        dispatch({
+            type: "SHOW_LOADING",
+        });
+        await axios.post("/api/items/delete-item", { itemId: record._id });
+        message.success("Item Deleted Succesfully");
+        getAllItems();
+        setPopupModal(false);
+        dispatch({ type: "HIDE_LOADING" });
+        } catch (error) {
+        dispatch({ type: "HIDE_LOADING" });
+        message.error("Something Went Wrong");
+        console.log(error);
+        }
+  };
+
+
+
       //table data
       const columns = [
         { title: "Name", dataIndex: "name" },
@@ -49,9 +70,21 @@ const ItemPage = () => {
         {
           title: "Actions",
           dataIndex: "_id",
-          render: (id, record) => (<div>
-            <DeleteOutlined style={{ cursor: "pointer" }}/>
-          <EditOutlined style={{ cursor: "pointer" }}/>
+          render: (id, record) => (
+          <div>
+          <DeleteOutlined 
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            handleDelete(record);
+          }}
+          />
+          <EditOutlined 
+          style={{ cursor: "pointer" }}
+          onClick={() => {
+            setEditItem(record);
+            setPopupModal(true);
+          }}
+          />
           </div>
           ),
         },
@@ -103,20 +136,29 @@ const ItemPage = () => {
         <Button type='primary' onClick={() => setPopupModal(true)}>Add Item</Button>
         </div>
         <Table columns={columns} dataSource={itemsData} bordered />
-        <Modal title="Add New Item" visible ={popupModal} onCancel={() => setPopupModal(false)} footer ={false}>
-        <Form 
-            layout= "vertical"
+        {popupModal && (
+        <Modal
+          title={`${editItem !== null ? "Edit Item " : "Add New Item"}`}
+          visible={popupModal}
+          onCancel={() => {
+            setEditItem(null);
+            setPopupModal(false);
+          }}
+          footer={false}
+        >
+          <Form
+            layout="vertical"
             initialValues={editItem}
-            onFinish={handleSubmit} >
-
-            <Form.Item name= "name" label="Name">
-                <Input/>
+            onFinish={handleSubmit}
+          >
+            <Form.Item name="name" label="Name">
+              <Input />
             </Form.Item>
-            <Form.Item name= "price" label="Price">
-                <Input/>
+            <Form.Item name="price" label="Price">
+              <Input />
             </Form.Item>
-            <Form.Item name= "image" label="Image URL">
-                <Input/>
+            <Form.Item name="image" label="Image URL">
+              <Input />
             </Form.Item>
             <Form.Item name="category" label="Category">
               <Select>
@@ -131,8 +173,9 @@ const ItemPage = () => {
                 SAVE
               </Button>
             </div>
-        </Form>
-      </Modal>
+          </Form>
+        </Modal>
+      )}
 
     </DefaultLayout>
   )
